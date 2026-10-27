@@ -288,7 +288,7 @@ def step_rom(assemble_it):
 
 def step_hosttest():
     core = os.path.join(ROOT, "src", "core")
-    srcs = [os.path.join(ROOT, "tools", "hosttest", "hosttest.c")] + \
+    srcs = [os.path.join(ROOT, "tools", "hosttest", f) for f in ("hosttest.c", "netplaytest.c")] + \
         sorted(os.path.join(core, f) for f in os.listdir(core) if f.endswith(".c"))
     hdrs = [os.path.join(core, f) for f in os.listdir(core) if f.endswith(".h")]
     if os.path.isfile(HOSTTEST_EXE) and os.path.getmtime(HOSTTEST_EXE) >= newest(srcs + hdrs):
@@ -413,6 +413,7 @@ def main():
 
     step_rom(not a.no_assemble)
     step_hosttest()
+    run([HOSTTEST_EXE, ROM_OUT, "--netplay-test"])
     step_icons()
     step_data()
     step_xbox()

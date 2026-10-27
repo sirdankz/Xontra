@@ -27,6 +27,9 @@
     <ClCompile Include="src\core\nes.c">
       <Filter>src\core</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\netplay.c">
+      <Filter>src\core</Filter>
+    </ClCompile>
     <ClCompile Include="src\core\osd.c">
       <Filter>src\core</Filter>
     </ClCompile>
@@ -40,6 +43,15 @@
       <Filter>src\xbox</Filter>
     </ClCompile>
     <ClCompile Include="src\xbox\xbox_main.c">
+      <Filter>src\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xbox\xbox_menu.c">
+      <Filter>src\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xbox\xbox_netplay.c">
+      <Filter>src\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xbox\xbox_runtime.c">
       <Filter>src\xbox</Filter>
     </ClCompile>
     <ClCompile Include="src\xbox\xbox_save.c">

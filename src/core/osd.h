@@ -12,6 +12,10 @@ typedef struct Osd
     int frames;                 /* left to show */
 } Osd;
 
+/* Draw text at a chosen position, with clipped pixels (menu and errors). */
+void osd_text(uint32_t *fb, int w, int h, int x, int y,
+              const char *text, uint32_t colour, int scale);
+
 /* show `text` (A-Z, 0-9, space and . - : ! /) for `frames` frames */
 void osd_show(Osd *o, const char *text, int frames);
 /* draw it into `fb` (w x h, 0xAARRGGBB), near the bottom, and count down */

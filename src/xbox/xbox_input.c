@@ -14,7 +14,8 @@
  * The port's own, from any controller: White saves the game's state while
  * it is paused, Black loads it (while paused, or at the title); left-stick
  * click smooths the picture, right-stick click shows every sprite (no
- * flicker); Back + Start + both triggers held is the dashboard. */
+ * flicker); Back + Start opens the front menu, and adding both triggers
+ * exits to the dashboard. */
 #include "xbox_xtl.h"
 
 #include <string.h>
@@ -29,7 +30,8 @@
 static HANDLE sPad[PORTS];
 static WORD sPrevButtons;
 static int sPrevWhite, sPrevBlack;
-static unsigned sFrame;
+static unsigned sFrame, sPrevNet;
+static int sPrevMenu;
 
 void xb_input_init(void)
 {
@@ -42,9 +44,14 @@ void xb_input_init(void)
 
 static void refresh(void)
 {
+    /* Request a fresh USB report every millisecond. */
+    XINPUT_POLLING_PARAMETERS polling = { 0 };
     DWORD ins = 0, rem = 0;
     int i;
 
+    polling.fAutoPoll = TRUE;
+    polling.bInputInterval = 1;
+    polling.bOutputInterval = 8;
     if (!XGetDeviceChanges(XDEVICE_TYPE_GAMEPAD, &ins, &rem))
         return;
     for (i = 0; i < PORTS; i++)
@@ -54,8 +61,11 @@ static void refresh(void)
             XInputClose(sPad[i]);
             sPad[i] = NULL;
         }
-        if ((ins & (1u << i)) && sPad[i] == NULL)
-            sPad[i] = XInputOpen(XDEVICE_TYPE_GAMEPAD, (DWORD)i, XDEVICE_NO_SLOT, NULL);
+        if ((ins & (1u << i)) && sPad[i] == NULL) {
+            sPad[i] = XInputOpen(XDEVICE_TYPE_GAMEPAD, (DWORD)i, XDEVICE_NO_SLOT, &polling);
+            if (sPad[i] == NULL)
+                sPad[i] = XInputOpen(XDEVICE_TYPE_GAMEPAD, (DWORD)i, XDEVICE_NO_SLOT, NULL);
+        }
     }
 }
 
@@ -100,7 +110,8 @@ unsigned xb_input_poll(uint8_t pads[2])
     WORD buttons = 0;
     int white = 0, black = 0, lt = 0, rt = 0, player = 0, i;
     int rapid_on = (sFrame++ % RAPID_PERIOD) < RAPID_PERIOD / 2;
-    unsigned cmd = 0;
+    unsigned cmd = 0, net = 0;
+    int menu = 0;
 
     refresh();
     pads[0] = pads[1] = 0;
@@ -114,6 +125,14 @@ unsigned xb_input_poll(uint8_t pads[2])
         g = &s.Gamepad;
         if (player < 2)
             pads[player++] = as_pad(g, rapid_on);
+        if ((g->wButtons & (XINPUT_GAMEPAD_BACK | XINPUT_GAMEPAD_START)) ==
+            (XINPUT_GAMEPAD_BACK | XINPUT_GAMEPAD_START)) menu = 1;
+        /* Keep the old leave chord as a shortcut. Hosting/joining is now
+         * selected in the front menu, so these cannot start a session. */
+        if ((g->wButtons & XINPUT_GAMEPAD_BACK) &&
+            g->bAnalogButtons[XINPUT_GAMEPAD_WHITE] > PRESSED &&
+            g->bAnalogButtons[XINPUT_GAMEPAD_BLACK] > PRESSED)
+            net |= XB_CMD_NET_EXIT;
         buttons |= g->wButtons;
         white |= g->bAnalogButtons[XINPUT_GAMEPAD_WHITE] > PRESSED;
         black |= g->bAnalogButtons[XINPUT_GAMEPAD_BLACK] > PRESSED;
@@ -133,6 +152,17 @@ unsigned xb_input_poll(uint8_t pads[2])
         cmd |= XB_CMD_SPRITES;
     if ((buttons & XINPUT_GAMEPAD_BACK) && (buttons & XINPUT_GAMEPAD_START) && lt && rt)
         cmd |= XB_CMD_QUIT;
+    if (net) {
+        /* Netplay chords must not also SELECT, save or load the game. */
+        pads[0] = pads[1] = 0;
+        cmd &= ~(XB_CMD_SAVE | XB_CMD_LOAD);
+        if (net & XB_CMD_NET_EXIT) net = XB_CMD_NET_EXIT;
+        cmd |= net & ~sPrevNet;
+    }
+    if (menu && !sPrevMenu) cmd |= XB_CMD_MENU;
+    if (menu) pads[0] = pads[1] = 0;
+    sPrevMenu = menu;
+    sPrevNet = net;
     sPrevButtons = buttons;
     return cmd;
 }

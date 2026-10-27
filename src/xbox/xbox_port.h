@@ -25,6 +25,7 @@ void xb_video_toggle_smooth(void);
 int xb_audio_init(void);
 /* mono samples at XB_AUDIO_RATE, in time order */
 void xb_audio_push(const int16_t *s, int n);
+void xb_audio_pause(int paused);
 
 void xb_input_init(void);
 /* the two NES pads this frame (PAD_*), and the port's own commands */
@@ -33,6 +34,11 @@ void xb_input_init(void);
 #define XB_CMD_SPRITES    0x04
 #define XB_CMD_SAVE       0x08
 #define XB_CMD_LOAD       0x10
+#define XB_CMD_NET_HOST   0x20
+#define XB_CMD_NET_JOIN   0x40
+#define XB_CMD_NET_EXIT   0x80
+#define XB_CMD_NET_ONLINE 0x100
+#define XB_CMD_MENU       0x200
 unsigned xb_input_poll(uint8_t pads[2]);
 
 /* the save state: loaded on demand (NULL when there is none), stored on

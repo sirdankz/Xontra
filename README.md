@@ -1,155 +1,258 @@
 # Contra NES-X
 
-A native original-Xbox port of *Contra* (Konami, NES, 1988 — the US
-release), built from
-[vermiceli/nes-contra-us](https://github.com/vermiceli/nes-contra-us), the
-annotated disassembly of the cartridge.
+Netplay fork of [Team-Resurgent/Contra-NES-X](https://github.com/Team-Resurgent/Contra-NES-X).
 
-The disassembly is **6502 assembly**, the NES's own machine code, so the game
-runs as 6502 code on the Xbox, on a small NES built in `src/core/` for this
-game:
+An original Xbox port of the US NES release of **Contra** (Konami, 1988),
+with local co-op, LAN play, and internet matchmaking with bounded rollback.
+The game runs on a dedicated NES core with a 6502 CPU, PPU, APU, and UxROM
+cartridge support. Xbox video, audio, controllers, and storage use RXDK.
 
-* a 6502 (`cpu6502.c`), the 2A03's (no decimal mode), which passes every
-  binary test of Klaus Dormann's 6502 functional test
-* the 2C02 PPU (`ppu.c`): the scroll registers, CHR-RAM — Contra
-  decompresses its own tiles into it — the nametables, eight-by-sixteen
-  sprites, sprite 0 and the eight-a-line limit, NTSC timing and its NMI
-* the 2A03's APU (`apu.c`): both pulses, the triangle, the noise and the
-  DMC (Contra's drums), the frame counter, mixed as the hardware's resistor
-  ladders mix them and filtered as the console's output stage filters them
-* the machine (`nes.c`): the UxROM board (mapper 2) with its bus conflict,
-  the two pads, OAM DMA, and save states of the whole machine
-
-The colours are worked out from the 2C02's signal (`tools/palette.py`), not
-copied from an emulator's palette.
-
-The Xbox side (`src/xbox/`) puts the picture on the TV with Direct3D, the
-sound out through DirectSound, reads the controllers, and keeps a save
-state on the hard disk.
-
-**No game data is in this repository.** You put your own cartridge in the
-folder as `baserom.nes`; `setup.py` fetches the disassembly and cc65 at
-pinned revisions, takes the graphics and music the disassembly does not
-carry from your cartridge (at the offsets its `assets.txt` lists), and
-assembles the cartridge — the disassembly builds it **byte for byte**, and
-the build checks that it does.
-
-| Cartridge | Size | MD5 | CRC32 |
-| --- | --- | --- | --- |
-| Contra (US) | 131,088 | `7BDAD8B4A7A56A634C9649D20BD3011B` | `C50A8304` |
-
-A dump that differs only in the iNES header's unused bytes is taken too.
-*Probotector*, the PAL version, is not: this port runs the NES at NTSC's
-speed.
+Game ROMs, cartridge assets, SDK libraries, and compiled builds are not included.
+A compatible Contra (US) cartridge dump is required.
 
 ## Features
 
-* The whole game: the eight stages, the 3-D bases, the ending — and the
-  30-lives code at the title
-* Two players: the first two controllers plugged in
-* Rapid fire on Y
-* Save states: the game's state at any pause, kept on the hard disk
-  (dashboard > Memory > Contra NES X), loaded while paused or at the title
-* 720p and 480p (progressive or interlaced), following the dashboard; the
-  224 lines a television shows scaled by a whole number (×3 at 720p, ×2 at
-  480) so every pixel is the same size, in the NES's backdrop colour
-* PAL consoles: 60 Hz when the dashboard allows PAL60, else 50 Hz with the
-  game still running at its own 60
-* Optional: no sprite flicker (right-stick click), smoothed picture
-  (left-stick click)
+- Single-player and two-player local co-op.
+- Two-console LAN play and public internet rooms with open or four-digit passcode access.
+- Waiting lobbies with an explicit host Start Game action.
+- Direct UDP connections with relay fallback.
+- Automatic input delay or a fixed delay of 0-12 frames.
+- Configurable rollback limit of 0-3 frames, chosen by the host.
+- Shared mono audio routed equally to the left and right speakers.
+- Controller polling configured for a 1 ms input interval, with a default fallback.
+- Rapid fire, local save states, optional sprite-limit removal, and image smoothing.
+- Dashboard-selected 480i, 480p, or 720p output with integer picture scaling.
+- PAL50 support with the NES simulation running at 60 frames per second.
 
-## Controls
+## Build requirements
 
-| Xbox | NES | In the game |
-| --- | --- | --- |
-| D-pad / left stick | the cross | move and aim |
-| A | A | jump |
-| B or X | B | fire |
-| Y | B, fifteen times a second | rapid fire |
-| Back | SELECT | 1 or 2 players at the title |
-| Start | START | start; pause |
-| White | | save state, while paused |
-| Black | | load state, while paused or at the title |
-| Back + Start + both triggers | | back to the dashboard |
+- Windows 10 or 11.
+- RXDK toolchain and SDK, normally installed under `C:\ProgramData\RXDK`.
+  A different installation can be selected with `RXDK_ROOT`.
+- Python 3.8 or later, using only the standard library.
+- A supported host C compiler: RXDK's clang with its Windows host sysroot,
+  Visual Studio's C compiler, or GCC.
+- A compatible Contra (US) ROM in the repository root as `baserom.nes`.
+- Git and an initial internet connection for the optional disassembly build.
 
-To save: **Start** to pause, **White** (STATE SAVED), **Start** to play on.
-Saving again replaces the state. To load: **Start** to pause (or be at the
-title), **Black** (STATE LOADED), **Start**. If the hard disk did not take
-the state the port says SAVE FAILED, and the last one is still there.
+| Cartridge | Size | MD5 | CRC32 |
+| --- | --- | --- | --- |
+| Contra (US) | 131,088 bytes | `7BDAD8B4A7A56A634C9649D20BD3011B` | `C50A8304` |
 
-## Requirements
-
-* Windows 10 or 11
-* your own Contra (US) cartridge, as `baserom.nes`
-* the RXDK toolchain: in Visual Studio, **RXDK > RXDK Window > Install
-  Prerequisites** (or RXDK's own installer), in `C:\ProgramData\RXDK`
-* [Python](https://www.python.org/downloads/) 3.8 or later
-* [Git](https://git-scm.com/download/win)
-* an internet connection the first time: the disassembly and cc65 are
-  fetched from GitHub
-
-Nothing else — no CMake, Make, MSYS or a cc65 install: ca65, ld65 and the
-PC-side test harness are compiled with the RXDK's own clang (or Visual
-Studio's `cl`, or a `gcc` on the `PATH`).
-
-`python setup.py --check` lists what is there and what is missing.
+Dumps that differ only in unused iNES header bytes are accepted. PAL Probotector
+is not supported.
 
 ## Building
 
-1. Download this repository (**Code > Download ZIP**, or `git clone`).
-2. Put your cartridge in the folder as **`baserom.nes`**.
-3. Double-click **`build.bat`**, or in a console:
+Run from the repository root in PowerShell:
 
-```bash
-python setup.py
+```powershell
+.\build.bat --no-assemble
 ```
 
-The result is **`out\Release\XISO\Contra-NES-X.iso`** (about 1.2 MB).
+This validates the cartridge, runs the native rollback regression suite,
+generates dashboard icons and project metadata, and builds the Xbox executable
+and ISO. The cartridge is copied directly; no disassembly checkout is needed.
 
-The build runs, in order:
+The optional disassembly build uses pinned revisions of
+[nes-contra-us](https://github.com/vermiceli/nes-contra-us) and
+[cc65](https://github.com/cc65/cc65):
 
-1. checks `baserom.nes`; fetches [the disassembly](https://github.com/vermiceli/nes-contra-us)
-   and [cc65 2.19](https://github.com/cc65/cc65) at the revisions `setup.py`
-   pins into `extern/`, builds ca65 and ld65, takes the graphics and music
-   from your cartridge into a copy of the disassembly (`build/decomp`), and
-   assembles and links it as its own build script does — checked against
-   the cartridge: `build/Contra.nes`;
-2. builds `tools/hosttest` (the port's NES on the PC) and has it run the
-   game to its title, for the dashboard icons — the CONTRA logo
-   (`tools/xbox/make_icons.py`);
-3. puts the cartridge in `data/` (the disc's `D:\data\Contra.nes`);
-4. writes `rxdk.project.json` and the Visual Studio project
-   (`Contra-NES-X.sln`);
-5. builds with `Rxdk.Cli`: the XBE, with its title and save icons, and the
-   ISO.
-
-`python setup.py --no-assemble` skips fetching and assembling, and puts
-your (checked) cartridge on the disc as it is: the same bytes, offline.
-
-To build from Visual Studio instead: run `python setup.py --skip-build`
-once, then open `Contra-NES-X.sln` and build; F5 deploys to a devkit and
-starts the Xbox Debugger.
-
-Title ID `0x54520016`.
-
-## On the PC: tools/hosttest
-
-The port's core runs on Windows too, with no Xbox, to see that the game
-works: `build/hosttest.exe` plays it headless with scripted input and writes
-PNG screenshots and a WAV of the sound.
-
-```bash
-build/hosttest.exe build/Contra.nes --frames 2400 --press 420-423:START --press 520-2400:RIGHT+B --every 200 --out shots --wav shots/stage1.wav
+```powershell
+.\build.bat
 ```
 
-`--press2` is player 2's pad; `--state-save F:FILE` and `--state-load F:FILE`
-save and load states; `--poke` / `--peek` set and read the game's RAM
-(with START pressed at frames 420-423, `--poke 600:30=1` starts on stage 2). `tools/hosttest/cputest.c` runs Klaus
-Dormann's [6502 functional test](https://github.com/Klaus2m5/6502_65C02_functional_tests)
-(`bin_files/6502_functional_test.bin`, not included) against the CPU.
+Additional commands:
 
-## Checking a tree before publishing
-
-```bash
-python tools/xbox/release_check.py
+```powershell
+.\build.bat --check
+.\build.bat --no-assemble --config Debug
+.\build.bat --no-assemble --skip-build
 ```
+
+`--check` reports prerequisites. `--skip-build` prepares the cartridge, host
+tools, tests, icons, and project files, then stops before the Xbox build.
+The prepared `Contra-NES-X.sln` can be opened in Visual Studio with RXDK.
+
+Output locations:
+
+- Game folder: `out\Release\Build\Contra-NES-X\`
+- Disc image: `out\Release\XISO\Contra-NES-X.iso`
+
+## Xbox installation
+
+Copy the complete game folder, preserving the cartridge subfolder:
+
+```text
+default.xbe
+data/
+  Contra.nes
+```
+
+The loader also accepts `Contra.nes`, `baserom.nes`, `Contra (USA).nes`, or
+`Contra (U).nes` beside `default.xbe`. The packaged `data/Contra.nes` is checked
+first. Missing, unreadable, or unsupported cartridges display a diagnostic
+screen; **A** retries and **B** returns to the dashboard.
+
+## Controls
+
+| Xbox control | Function |
+| --- | --- |
+| D-pad / left stick | Move and aim |
+| A | Jump |
+| B / X | Fire |
+| Y | Rapid fire |
+| Back | NES Select; choose 1 or 2 players at the title |
+| Start | Start / pause |
+| White | Save state while paused, local play only |
+| Black | Load state while paused or at the title, local play only |
+| Left-stick click | Toggle picture smoothing |
+| Right-stick click | Toggle sprite limit, local play only |
+| Back + Start | Return to the front menu and end the current game |
+| Back + Start + both triggers | Return to the dashboard |
+
+The first two connected controllers control local P1 and P2. Network sessions
+use the first connected controller on each console. Save states use the title's
+Xbox save directory; saving replaces the previous state.
+
+## LAN and internet play
+
+Both consoles require the same source build and compatible cartridge. The host
+controls P1 and the joining console controls P2.
+
+1. Select **Netplay Settings** before hosting. Left/Right changes settings;
+   **A** advances the selected value and **B** returns.
+2. Select **LAN Play > Host LAN Game** or **Online Play > Host Room**.
+   Online hosting opens **Create Room**. Choose **Access: Open** or
+   **Access: Passcode**. **Set Passcode** opens a four-digit editor: Left/Right
+   selects a digit, Up/Down changes it, and **A** confirms. Codes retain leading
+   zeros, including `0000`. Select **Create Public Room** to publish the room.
+3. On the other console, select **Join LAN Game** or **Browse Rooms**.
+   Public rooms show their room ID, `OPEN` or `CODE` access, and `1/2` occupancy.
+   Up/Down selects a room and **A** joins. `CODE` rooms prompt for four digits.
+   **B** returns from the code prompt to the browser. Incorrect codes allow a
+   retry; repeated attempts are limited to five per ten seconds per source IP.
+4. Both players remain in the lobby while the connection is measured. Once the
+   room is ready, the host presses **A** on **Start Game**. At the Contra title,
+   the host selects **2 PLAYERS** with **Back** and presses **Start**.
+
+**B** cancels a lobby. **Back + Start** ends a session and returns to the front
+menu. Starting a game from the menu starts a fresh machine state. Menus are
+silent and do not advance the NES simulation.
+
+### Delay and rollback
+
+The host chooses **Frame Delay: Auto or 0-12** and **Rollback Limit: 0-3**.
+The joining console adopts these settings. Preferences remain in memory until
+the title exits, and changes apply to the next session. Local play has no added
+netplay delay.
+
+Auto measures round-trip latency and jitter, subtracts the selected prediction
+allowance, and adjusts delay during play. Fast connections can use zero added
+delay. Fixed delay remains unchanged during the session. Lower delay can cause
+more waiting on a slow or unstable connection. Zero rollback disables prediction
+and waits for authoritative remote input.
+
+Rollback holds the last known remote input, restores a complete machine snapshot
+when a prediction changes, and replays within the selected limit. Prediction
+never exceeds three frames beyond the oldest unconfirmed input. Beyond that
+limit, simulation waits. Audio is released only for confirmed frames, and replay
+does not duplicate sound.
+
+No port-drawn HUD text is shown while netplay is running, including connection
+and player instructions. Room state and errors are displayed in the pregame menus. Save/load and sprite-limit changes are
+disabled during network sessions; smoothing remains a local setting.
+
+### Network service
+
+The default directory and relay endpoint is **172.233.145.244:6475/UDP**;
+clients use **6474/UDP**. Internet rooms require a running compatible service.
+LAN discovery uses broadcast within the same subnet.
+
+Peers attempt a direct connection and fall back to the relay when necessary.
+Relayed play does not require Xbox-side router port forwarding. The server
+requires inbound UDP 6475 through the host firewall and any cloud firewall.
+
+The room directory uses protocol version 3 (`CDR3`). Both Xbox clients and the
+server must be updated together; older version 2 services cannot create or join
+these rooms. The server update is independent of the Xbox build.
+
+The server implementation is included in `server/`. It provides transient rooms,
+endpoint-bound challenges, build/cartridge compatibility checks, rate limits,
+and a two-player relay. Protected rooms remain publicly listed, but peer
+addresses and relay tokens are supplied only after the server verifies the
+passcode. Passcodes are stored as keyed hashes in server memory and are never
+included in room listings. No player accounts or persistent profiles are used.
+
+For a self-hosted service, change `DIRECTORY_IP` in
+`src/xbox/xbox_netplay.c` to the server's public IPv4 address and rebuild both
+clients. The client and service ports must agree.
+
+## Server installation
+
+The service requires Python 3.8 or later on a Linux host with systemd. The
+installer also uses `ss` from iproute2. From the repository root, replace
+`username@server` with the destination SSH account:
+
+```powershell
+ssh username@server "mkdir -p ~/contra-netplay"
+scp server/contra_server.py server/test_server.py server/install_server.py server/contra-netplay.service username@server:~/contra-netplay/
+ssh -t username@server "sudo python3 ~/contra-netplay/install_server.py"
+```
+
+The installer runs server tests, checks UDP 6475 ownership, backs up an existing
+Contra installation, installs under `/opt/contra-netplay`, and starts
+`contra-netplay.service`. A local UDP health check verifies startup; installation
+failure restores the previous Contra files. The service runs with a restricted
+dynamic system account. An installed UFW receives a UDP 6475 allow rule without
+being enabled or reset. Cloud firewall rules are configured separately.
+
+A foreground server can also be started with:
+
+```powershell
+python -B server/contra_server.py --bind 0.0.0.0 --port 6475
+```
+
+## Validation
+
+Server tests cover room listings, passcodes, attempt limits, reordered join
+replies, relay authorization, lifecycle behavior, and a live loopback UDP
+exchange. They require no game build or installation:
+
+```powershell
+python -B server/test_server.py
+```
+
+The game build runs `hosttest build/Contra.nes --netplay-test`. Regression cases
+cover rollback limits 0-3, every manual delay/limit combination, automatic delay,
+duplicated and reordered input, retransmission gaps, history wrap, and confirmed
+audio and state hashes against an uninterrupted reference machine.
+
+Console validation covers local and network co-op, pause, save/load, 50/60 Hz
+displays, direct and relayed connections, timeout, and disconnect/rejoin behavior.
+
+Before publishing a clean source checkout:
+
+```powershell
+python -B tools/xbox/release_check.py
+```
+
+The release check rejects cartridge data, generated assets, build outputs,
+archives, backup files, credentials, and machine-specific user paths.
+
+## Credits and license
+
+- Contra: Konami, 1988.
+- [nes-contra-us](https://github.com/vermiceli/nes-contra-us): annotated Contra
+  disassembly, building on Trax's work.
+- [cc65](https://github.com/cc65/cc65): assembler and linker for the optional
+  disassembly build.
+- RXDK: [Team Resurgent](https://github.com/Team-Resurgent).
+- Undead Neighbor Eaters / ZAMN netplay: reference for transport and frame-history
+  design. Contra uses its own protocol and service.
+- Klaus Dormann's 6502 functional test: supported by the CPU test harness;
+  test binaries are not included.
+
+Project code is licensed under the [MIT License](LICENSE). Third-party projects
+retain their own terms; see [NOTICE](NOTICE). Contra NES-X is not affiliated with
+or endorsed by Konami.

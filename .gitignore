@@ -57,3 +57,21 @@ __pycache__/
 
 # --- release notes, kept local -----------------------------------------------
 *.nfo
+
+# Local work, archives, backups, and credentials
+/work/
+/outputs/
+*.zip
+*.7z
+*.rar
+*.bak
+*.old
+*~
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+*.pyc
+*.pyo

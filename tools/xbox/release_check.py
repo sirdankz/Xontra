@@ -32,8 +32,9 @@ ROM_EXT = (".nes", ".fds", ".unf", ".unif", ".rom", ".bin", ".chr", ".prg", ".st
            ".mp3", ".asm", ".dbg", ".png", ".bmp", ".gif", ".iso", ".xbe", ".xbx", ".obj", ".o",
            ".lib", ".a", ".exe", ".dll", ".so", ".pdb", ".lst", ".sym", ".map", ".nl")
 GENERATED_DIRS = ("data/", "extern/", "build/", "Platform/xbox/gen/", "out/", "Xbox/", ".vs/",
-                  "Contra-NES-X/")
+                  "Contra-NES-X/", "work/", "outputs/")
 GENERATED_FILES = ()
+LOCAL_EXT = (".zip", ".7z", ".rar", ".bak", ".old", ".pem", ".key", ".pfx", ".p12", ".pyc", ".pyo")
 INES = b"NES\x1a"              # an iNES cartridge's first bytes
 STATE = b"CNXS"                # the port's save state (src/core/nes.c)
 MAX_SIZE = 1024 * 1024
@@ -65,6 +66,11 @@ def candidate_files(root):
 def problems(root, rel):
     low = rel.lower()
     p = []
+    basename = low.rsplit("/", 1)[-1]
+    if (low.endswith(LOCAL_EXT) or basename.endswith("~") or
+            basename == ".env" or basename.startswith(".env.") or
+            "__pycache__" in low.split("/")):
+        p.append("local archive, backup, credential or interpreter cache")
     if low.endswith(ROM_EXT):
         p.append("cartridge, save state, the disassembly or its assets, a picture or sound of the game, "
                  "or build output")

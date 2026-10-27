@@ -45,12 +45,12 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox'">
     <Link>
-      <LibraryDependencies>libxbdmd;libd3d8d;libd3dx8d;libxgraphicsd;libdsoundd;libxapid;libcd;libcppd;libkerneld</LibraryDependencies>
+      <LibraryDependencies>libxbdmd;libd3d8d;libd3dx8d;libxgraphicsd;libdsoundd;libxnetd;libxapid;libcd;libcppd;libkerneld</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Xbox'">
     <Link>
-      <LibraryDependencies>libd3d8;libd3dx8;libxgraphics;libdsound;libxapi;libc;libcpp;libkernel</LibraryDependencies>
+      <LibraryDependencies>libd3d8;libd3dx8;libxgraphics;libdsound;libxnet;libxapi;libc;libcpp;libkernel</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>
@@ -79,11 +79,15 @@
     <ClCompile Include="src\core\apu.c" />
     <ClCompile Include="src\core\cpu6502.c" />
     <ClCompile Include="src\core\nes.c" />
+    <ClCompile Include="src\core\netplay.c" />
     <ClCompile Include="src\core\osd.c" />
     <ClCompile Include="src\core\ppu.c" />
     <ClCompile Include="src\xbox\xbox_audio.c" />
     <ClCompile Include="src\xbox\xbox_input.c" />
     <ClCompile Include="src\xbox\xbox_main.c" />
+    <ClCompile Include="src\xbox\xbox_menu.c" />
+    <ClCompile Include="src\xbox\xbox_netplay.c" />
+    <ClCompile Include="src\xbox\xbox_runtime.c" />
     <ClCompile Include="src\xbox\xbox_save.c" />
     <ClCompile Include="src\xbox\xbox_video.c" />
   </ItemGroup>

@@ -69,6 +69,28 @@ static const uint8_t *glyph(char c)
     return NULL;                /* a space, or what the font has not */
 }
 
+void osd_text(uint32_t *fb, int w, int h, int x, int y,
+              const char *text, uint32_t colour, int scale)
+{
+    int i, row, col, dx, dy;
+    if (!fb || !text || scale < 1 || scale > 4) return;
+    for (i = 0; text[i]; ++i) {
+        const uint8_t *g = glyph(text[i]);
+        if (!g) continue;
+        for (row = 0; row < GLYPH_H; ++row)
+            for (col = 0; col < GLYPH_W; ++col) {
+                if (!(g[row] & (0x10 >> col))) continue;
+                for (dy = 0; dy < scale; ++dy)
+                    for (dx = 0; dx < scale; ++dx) {
+                        int px = x + (i * ADVANCE + col) * scale + dx;
+                        int py = y + row * scale + dy;
+                        if (px >= 0 && px < w && py >= 0 && py < h)
+                            fb[py * w + px] = colour;
+                    }
+            }
+    }
+}
+
 void osd_show(Osd *o, const char *text, int frames)
 {
     strncpy(o->text, text, sizeof(o->text) - 1);

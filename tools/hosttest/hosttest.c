@@ -29,6 +29,7 @@
 
 #include "../../src/core/nes.h"
 #include "../../src/core/osd.h"
+int netplay_selftest(const uint8_t *rom, size_t length);
 
 #define RATE 48000
 #define MAX_SAMPLES (RATE / 50)
@@ -306,7 +307,7 @@ int main(int argc, char **argv)
     static uint32_t fb[NES_W * NES_H];
     static int16_t audio[MAX_SAMPLES];
     static Osd osd;
-    int frames = 600, every = 0, unlimited = 0, i, f, osd_frame = -1;
+    int frames = 600, every = 0, unlimited = 0, i, f, osd_frame = -1, net_test = 0;
     const char *out = ".", *wav = NULL, *osd_text = NULL;
     int shots[256], nshots = 0;
     unsigned peek_addr = 0, peek_len = 0;
@@ -385,6 +386,8 @@ int main(int argc, char **argv)
                 return 2;
             }
         }
+        else if (strcmp(argv[i], "--netplay-test") == 0)
+            net_test = 1;
         else if (strcmp(argv[i], "--unlimited") == 0)
             unlimited = 1;
         else
@@ -399,6 +402,11 @@ int main(int argc, char **argv)
     {
         perror(argv[1]);
         return 2;
+    }
+    if (net_test) {
+        int result = netplay_selftest(rom, rom_len);
+        free(rom);
+        return result;
     }
     n.log = log_line;
     if (nes_init(&n, rom, rom_len, fb, RATE) != 0)

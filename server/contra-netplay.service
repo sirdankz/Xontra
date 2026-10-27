@@ -1,0 +1,22 @@
+[Unit]
+Description=Contra NES-X matchmaking and relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+WorkingDirectory=/opt/contra-netplay
+ExecStart=/usr/bin/python3 -B /opt/contra-netplay/contra_server.py --port 6475
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+RestrictAddressFamilies=AF_INET AF_UNIX
+MemoryMax=128M
+LimitNOFILE=256
+
+[Install]
+WantedBy=multi-user.target
