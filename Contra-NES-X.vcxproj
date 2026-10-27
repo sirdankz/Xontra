@@ -64,7 +64,7 @@
   <ItemDefinitionGroup>
     <ImageBld>
       <TestId>0x54520016</TestId>
-      <TestName>Contra NES X</TestName>
+      <TestName>Xontra</TestName>
       <TestVersion>1</TestVersion>
       <TitleImage>Platform\xbox\gen\titleimage.xbx</TitleImage>
       <DefaultSaveImage>Platform\xbox\gen\saveimage.xbx</DefaultSaveImage>

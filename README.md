@@ -1,8 +1,8 @@
-# Contra NES-X
+# Xontra
 
 Netplay fork of [Team-Resurgent/Contra-NES-X](https://github.com/Team-Resurgent/Contra-NES-X).
 
-An original Xbox port of the US NES release of **Contra** (Konami, 1988),
+Xontra is an original Xbox port of the US NES release of **Contra** (Konami, 1988),
 with local co-op, LAN play, and internet matchmaking with bounded rollback.
 The game runs on a dedicated NES core with a 6502 CPU, PPU, APU, and UxROM
 cartridge support. Xbox video, audio, controllers, and storage use RXDK.

@@ -124,7 +124,7 @@ void xb_menu_draw(const XbMenu *m,uint32_t *fb)
         centre(fb,202,"A SELECT   B BACK",WHITE,1);
         return;
     }
-    centre(fb,25,m->page==1?"ONLINE PLAY":m->page==2?"LAN PLAY":m->page==3?"NET SETTINGS":"CONTRA",WHITE,2);
+    centre(fb,25,m->page==1?"ONLINE PLAY":m->page==2?"LAN PLAY":m->page==3?"NET SETTINGS":"XONTRA",WHITE,2);
     centre(fb,49,m->page==3?"HOST SETTINGS - NEXT SESSION":m->page?"TWO PLAYER CO-OP":"NES XBOX",GREY,1);
     if(m->page==3) {
         if(xb_net_delay_setting()<0)snprintf(line,sizeof(line),"FRAME DELAY: AUTO");

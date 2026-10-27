@@ -21,7 +21,7 @@ ROOT = xbconfig.ROOT
 PROJECT_NAME = "Contra-NES-X"           # the ISO is out/<Config>/XISO/Contra-NES-X.iso
 # Team Resurgent TitleID-DB: the next after Contra-X (54520015)
 TITLE_ID = "0x54520016"
-TITLE_NAME = "Contra NES X"
+TITLE_NAME = "Xontra"
 
 LIBS_RELEASE = ["libd3d8.lib", "libd3dx8.lib", "libxgraphics.lib", "libdsound.lib",
                 "libxnet.lib", "libxapi.lib", "libc.lib", "libcpp.lib", "libkernel.lib"]

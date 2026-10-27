@@ -1,5 +1,6 @@
-Contra NES-X
+Xontra
 
+Netplay fork of Team-Resurgent/Contra-NES-X.
 Original Xbox port of Contra (Konami, NES, 1988).
 
 The project's own source, tools, build scripts, server, and platform definitions

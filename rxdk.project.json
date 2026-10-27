@@ -73,7 +73,7 @@
         "noLogo": true,
         "noLibWarn": true,
         "testId": "0x54520016",
-        "testName": "Contra NES X",
+        "testName": "Xontra",
         "testVersion": "1",
         "titleImage": "Platform/xbox/gen/titleimage.xbx",
         "defaultSaveImage": "Platform/xbox/gen/saveimage.xbx"
@@ -148,7 +148,7 @@
         "noLogo": true,
         "noLibWarn": true,
         "testId": "0x54520016",
-        "testName": "Contra NES X",
+        "testName": "Xontra",
         "testVersion": "1",
         "titleImage": "Platform/xbox/gen/titleimage.xbx",
         "defaultSaveImage": "Platform/xbox/gen/saveimage.xbx"
