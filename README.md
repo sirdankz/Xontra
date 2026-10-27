@@ -31,11 +31,8 @@ displays a cartridge screen. **A** retries and **B** returns to the dashboard.
 
 - Single-player and two-player local co-op.
 - LAN play and public internet rooms with Open or four-digit Passcode access.
-- Waiting lobbies with a host-controlled Start Game action.
-- Direct UDP connections with relay fallback.
 - Automatic input delay or a fixed delay of 0-12 frames.
 - Configurable rollback limit of 0-3 frames.
-- Audio routed equally to the left and right speakers.
 - Rapid fire, local save states, image smoothing, and optional sprite-limit removal.
 - Dashboard-selected 480i, 480p, or 720p output with integer scaling.
 - PAL50 output with the NES simulation running at 60 frames per second.
