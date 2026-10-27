@@ -97,46 +97,6 @@ The port draws no HUD text during netplay. Room messages and errors appear in
 the menus. Save/load and sprite-limit changes are disabled during network play;
 picture smoothing is local to each console.
 
-## Network service
-
-The default directory/relay endpoint is **172.233.145.244:6475/UDP**. Clients use
-**6474/UDP**. Direct connections are preferred, with relay fallback when needed.
-Relayed connections do not require Xbox-side router port forwarding.
-
-Internet rooms use protocol version 3 (`CDR3`) and require a compatible service.
-The server source is in `server/`. Protected rooms are publicly listed, but the
-server supplies peer addresses and session tokens only after checking the code.
-Passcodes are stored as keyed hashes in memory and excluded from room listings.
-Attempts are limited to five per ten seconds per source IP. Rooms are transient;
-there are no player accounts or persistent profiles.
-
-### Hosting a service
-
-Requirements: Python 3.8+, Linux with systemd and iproute2, SSH access, and inbound
-UDP 6475 through the host and cloud firewalls.
-
-Replace `username@server` with the destination SSH account:
-
-```powershell
-ssh username@server "mkdir -p ~/contra-netplay"
-scp server/contra_server.py server/test_server.py server/install_server.py server/contra-netplay.service username@server:~/contra-netplay/
-ssh -t username@server "sudo python3 ~/contra-netplay/install_server.py"
-```
-
-The installer runs the server tests, checks port ownership, backs up an existing
-Contra service, and installs under `/opt/contra-netplay`. It starts
-`contra-netplay.service` with a restricted dynamic account. An installed UFW
-receives a UDP 6475 allow rule; cloud firewall rules are configured separately.
-
-For a different server address, set `DIRECTORY_IP` in `src/xbox/xbox_netplay.c`
-and rebuild both clients. The client and service ports must agree.
-
-Foreground server command:
-
-```powershell
-python -B server/contra_server.py --bind 0.0.0.0 --port 6475
-```
-
 ## Building from source
 
 Requirements:
@@ -199,7 +159,6 @@ The ZIP includes only `default.xbe`, `README.txt`, `LICENSE`, and `NOTICE`.
 ### Development checks
 
 ```powershell
-python -B server/test_server.py
 python -B tools/xbox/release_check.py
 ```
 

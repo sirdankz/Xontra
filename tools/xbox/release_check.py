@@ -34,6 +34,8 @@ ROM_EXT = (".nes", ".fds", ".unf", ".unif", ".rom", ".bin", ".chr", ".prg", ".st
 GENERATED_DIRS = ("data/", "extern/", "build/", "Platform/xbox/gen/", "out/", "Xbox/", ".vs/",
                   "Contra-NES-X/", "work/", "outputs/")
 GENERATED_FILES = ()
+PRIVATE_NAMES = ("contra_server.py", "test_server.py", "install_server.py",
+                 "contra-netplay.service", "update_server.ps1")
 LOCAL_EXT = (".zip", ".7z", ".rar", ".bak", ".old", ".pem", ".key", ".pfx", ".p12", ".pyc", ".pyo")
 INES = b"NES\x1a"              # an iNES cartridge's first bytes
 STATE = b"CNXS"                # the port's save state (src/core/nes.c)
@@ -67,6 +69,8 @@ def problems(root, rel):
     low = rel.lower()
     p = []
     basename = low.rsplit("/", 1)[-1]
+    if low.startswith("server/") or basename in PRIVATE_NAMES:
+        p.append("deployment-only server file")
     if (low.endswith(LOCAL_EXT) or basename.endswith("~") or
             basename == ".env" or basename.startswith(".env.") or
             "__pycache__" in low.split("/")):

@@ -75,3 +75,6 @@ __pycache__/
 *.p12
 *.pyc
 *.pyo
+
+# Deployment-only source
+/server/
