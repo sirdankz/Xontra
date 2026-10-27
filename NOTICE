@@ -4,8 +4,10 @@ Netplay fork of Team-Resurgent/Contra-NES-X.
 Original Xbox port of Contra (Konami, NES, 1988).
 
 The project's own source, tools, build scripts, server, and platform definitions
-are provided under the MIT License in LICENSE. Game ROMs, cartridge assets, SDK
-libraries, and third-party source distributions are not included.
+are provided under the MIT License in LICENSE. The source repository excludes game ROMs, cartridge assets, SDK library
+archives, and third-party source distributions. Runtime and toolchain components
+retain their applicable notices and terms. Public executable packages exclude
+ROMs and cartridge artwork; dashboard icons are generated original graphics.
 
 External build dependencies retain their own terms:
 

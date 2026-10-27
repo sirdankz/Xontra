@@ -23,8 +23,8 @@ The game is not in this repository. It is made here, into folders
      from your baserom.nes at the offsets its assets.txt lists. The result is
      checked against the cartridge (the disassembly builds it byte for byte)
   2. tools/hosttest built for Windows (build/hosttest.exe): the port's NES
-     core on the PC. It runs the game to its title for the dashboard icons
-     (the CONTRA logo: tools/xbox/make_icons.py)
+     core on the PC, including deterministic rollback regression tests.
+     Original dashboard icons are generated without reading the cartridge.
   3. data/Contra.nes: the disc's copy, D:\\data\\Contra.nes
   4. rxdk.project.json (gen_manifest.py) and the Visual Studio project
      (gen_vcxproj.py)
@@ -73,8 +73,6 @@ OBJECTS = ("ram", "constants", "ines_header", "bank0", "bank1", "bank2", "bank3"
            "bank5", "bank6", "bank7")
 
 HOSTTEST_EXE = os.path.join(BUILD, "hosttest.exe")
-ICON_FRAME = 400                # the title with Bill and Lance, before the demo
-ICON_SHOT = os.path.join(BUILD, "icons", "shot_%05d.png" % ICON_FRAME)
 
 
 def say(msg):
@@ -300,12 +298,8 @@ def step_hosttest():
 
 
 def step_icons():
-    """The title's logo, once the intro has scrolled it in."""
-    if not os.path.isfile(ICON_SHOT) or os.path.getmtime(ICON_SHOT) < newest([ROM_OUT, HOSTTEST_EXE]):
-        os.makedirs(os.path.dirname(ICON_SHOT), exist_ok=True)
-        run([HOSTTEST_EXE, ROM_OUT, "--frames", str(ICON_FRAME + 1), "--shot", str(ICON_FRAME),
-             "--out", os.path.dirname(ICON_SHOT)], quiet=True)
-    run([sys.executable, os.path.join(ROOT, "tools", "xbox", "make_icons.py"), ICON_SHOT])
+    """Original dashboard artwork; no game screenshot or cartridge assets."""
+    run([sys.executable, os.path.join(ROOT, "tools", "xbox", "make_icons.py")])
 
 
 # ------------------------------------------------------------------ data
